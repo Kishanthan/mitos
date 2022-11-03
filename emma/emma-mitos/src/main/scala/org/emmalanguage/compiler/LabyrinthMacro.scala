@@ -36,12 +36,14 @@ class mitosMacro(val c: blackbox.Context) extends MacroCompiler with mitosCompil
       case "naive" => NaiveEval(pipeline(true)(xfms: _*)) _
       case "timer" => TimerEval(pipeline(true)(xfms: _*)) _
     }
+    print(api.Tree.show(e.tree))
     // apply the pipeline to the input tree
     val rslt = eval(e.tree)
     // optionally, print the result
     if (cfg.getBoolean("emma.compiler.print-result")) {
       c.warning(e.tree.pos, api.Tree.show(rslt))
     }
+    print(api.Tree.show(rslt))
     // wrap the result in an Expr and return it
     c.Expr[T](unTypeCheck(rslt))
   }

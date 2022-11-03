@@ -73,12 +73,6 @@ public class TransitiveClosureNaive {
 				.where(1)
 				.equalTo(0)
 				.with(new JoinFunction<Tuple2<Long, Long>, Tuple2<Long, Long>, Tuple2<Long, Long>>() {
-					@Override
-					/**
-						left: Path (z,x) - x is reachable by z
-						right: Edge (x,y) - edge x-->y exists
-						out: Path (z,y) - y is reachable by z
-					 */
 					public Tuple2<Long, Long> join(Tuple2<Long, Long> left, Tuple2<Long, Long> right) throws Exception {
 						return new Tuple2<Long, Long>(left.f0, right.f1);
 					}

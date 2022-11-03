@@ -32,13 +32,13 @@
     <properties>
         <!-- Skip jar creation -->
         <jar.skipIfEmpty>true</jar.skipIfEmpty>
-        <maven.install.skip>true</maven.install.skip>
+        <maven.install.skip>false</maven.install.skip>
         <!-- Skip Sonatype deployment -->
         <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
 
         <!-- Predicates -->
         <scala-maven-plugin.skip>false</scala-maven-plugin.skip>
-        <scalastyle-maven-plugin.skip>false</scalastyle-maven-plugin.skip>
+        <scalastyle-maven-plugin.skip>true</scalastyle-maven-plugin.skip>
         <scalatest-maven-plugin.skip>${skipTests}</scalatest-maven-plugin.skip>
 
         <!-- Breeze -->

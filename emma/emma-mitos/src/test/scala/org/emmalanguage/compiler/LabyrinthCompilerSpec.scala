@@ -590,6 +590,8 @@ class mitosCompilerSpec extends BaseCompilerSpec
         LabyStatics.executeWithCatch(env)
       }
 
+      print(applyLabynization()(inp))
+      print(anfPipeline(exp))
       applyLabynization()(inp) shouldBe alphaEqTo(anfPipeline(exp))
     }
 
@@ -1268,9 +1270,41 @@ class mitosCompilerSpec extends BaseCompilerSpec
 
       }
 
-      applyLabynization()(inp) shouldBe alphaEqTo(anfPipeline(exp))
+      var ex = applyLabynization()(inp)
+      var ac = anfPipeline(exp)
+      print(ex)
+      ex shouldBe alphaEqTo(ac)
+
     }
     
+  }
+
+  "transitive closure" in {
+    val inp = reify {
+      var paths: DataBag[Edge[Long]] = DataBag.empty
+      var count = paths.size
+      var added = 0L
+
+      do {
+        val delta = for {
+          e1 <- paths
+          e2 <- paths
+          if e1.dst == e2.src
+        } yield Edge(e1.src, e2.dst)
+
+        paths = (paths union delta)
+
+        val size = paths.size
+
+        added = size - count
+        count = size
+      } while (added > 0)
+
+      print(paths)
+    }
+
+    var ex = applyLabynization()(inp)
+    print(ex)
   }
 
   def expandAndAnf(t: u.Tree) : u.Tree = {

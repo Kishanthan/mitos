@@ -16,9 +16,11 @@
 
 package org.emmalanguage.mitos.jobs;
 
+import org.apache.flink.api.java.typeutils.PojoTypeInfo;
 import org.emmalanguage.mitos.*;
 import org.emmalanguage.mitos.partitioners.Always0;
 import org.emmalanguage.mitos.partitioners.RoundRobin;
+import org.emmalanguage.mitos.util.TupleIntInt;
 import org.emmalanguage.mitos.util.Unit;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.typeinfo.TypeHint;
@@ -47,6 +49,10 @@ public class WordCount {
 
 	public static void main(String[] args) throws Exception {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+		PojoTypeInfo
+			.registerCustomSerializer(ElementOrEvent.class, new ElementOrEvent.ElementOrEventSerializerFactory());
+		PojoTypeInfo.registerCustomSerializer(TupleIntInt.class, TupleIntInt.TupleIntIntSerializer.class);
 
 		CFLConfig.getInstance().terminalBBId = 0; // this will have to be found automatically
 		KickoffSource kickoffSource = new KickoffSource(0); // this as well

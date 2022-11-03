@@ -24,6 +24,7 @@ import org.emmalanguage.mitos.PhiNode;
 import org.emmalanguage.mitos.operators.AssertEquals;
 import org.emmalanguage.mitos.operators.Bagify;
 import org.emmalanguage.mitos.operators.ConditionNode;
+import org.emmalanguage.mitos.operators.Print;
 import org.emmalanguage.mitos.operators.SmallerThan;
 import org.emmalanguage.mitos.partitioners.RoundRobin;
 import org.emmalanguage.mitos.util.LogicalInputIdFiller;
@@ -53,7 +54,7 @@ import java.util.Arrays;
  *     i = i + 1
  * } while (i < 100)
  * // BB 2
- * assert i == 100
+ * print(i)
  */
 
 public class SimpleCF {
@@ -73,6 +74,7 @@ public class SimpleCF {
 		//env.getConfig().setParallelism(1);
 
 		final int n = Integer.parseInt(args[0]);
+//		final int n = 100;
 
 		final int bufferTimeout = 0;
 
@@ -144,11 +146,16 @@ public class SimpleCF {
 		// Edge going out of the loop
 		DataStream<ElementOrEvent<Integer>> output = incedSplit.select("1");
 
-		output.bt("Check i == " + n, Util.tpe(),
-				new BagOperatorHost<>(
-						new AssertEquals<>(n), 2, 5, integerSer)
-						.addInput(0, 1, false, 2)).setParallelism(1);
-				//.setConnectionType(new gg.partitioners2.FlinkPartitioner<>()); // ez itt azert nem kell, mert nincs output
+//		output.bt("Check i == " + n, Util.tpe(),
+//				new BagOperatorHost<>(
+//						new AssertEquals<>(n), 2, 5, integerSer)
+//						.addInput(0, 1, false, 2)).setParallelism(1);
+//				//.setConnectionType(new gg.partitioners2.FlinkPartitioner<>()); // ez itt azert nem kell, mert nincs output
+
+		output.bt("print-phase " + n, Util.tpe(),
+			new BagOperatorHost<>(
+				new Print<>("print count value"), 2, 5, integerSer)
+				.addInput(0, 1, false, 2)).setParallelism(1);
 
 		output.addSink(new DiscardingSink<>());
 

@@ -34,6 +34,7 @@ public class Print<T> extends BagOperator<T, Unit> {
     public void pushInElement(T e, int logicalInputId) {
         super.pushInElement(e, logicalInputId);
         LOG.info("Print("+name+") element: " + e);
+        System.out.println("Print("+name+") element: " + e);
     }
 
     @Override

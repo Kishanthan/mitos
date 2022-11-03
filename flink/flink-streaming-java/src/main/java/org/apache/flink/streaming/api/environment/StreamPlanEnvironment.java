@@ -59,6 +59,8 @@ public class StreamPlanEnvironment extends StreamExecutionEnvironment {
 		StreamGraph streamGraph = getStreamGraph();
 		streamGraph.setJobName(jobName);
 
+		System.out.println(streamGraph.getStreamingPlanAsJSON());
+
 		transformations.clear();
 
 		if (env instanceof OptimizerPlanEnvironment) {

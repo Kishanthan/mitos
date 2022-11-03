@@ -16,17 +16,13 @@
 package org.emmalanguage
 package examples.graphs
 
-import api._
-import examples.graphs.model.Edge
-import test.util._
-
-import org.scalatest.BeforeAndAfter
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.emmalanguage.api.DataBag
+import org.emmalanguage.examples.graphs.model.Edge
+import org.emmalanguage.test.util._
+import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 import resource._
 
-import java.io.File
-import java.io.PrintWriter
+import java.io.{File, PrintWriter}
 
 trait BaseTransitiveClosureIntegrationSpec extends FlatSpec with Matchers with BeforeAndAfter {
 
@@ -38,7 +34,7 @@ trait BaseTransitiveClosureIntegrationSpec extends FlatSpec with Matchers with B
     new File(codegenDir).mkdirs()
     new File(path).mkdirs()
     addToClasspath(new File(codegenDir))
-    generateInput(s"$path/edges.tsv")
+    generateInput(s"$path/edges.tsv1")
   }
 
   after {
@@ -47,13 +43,18 @@ trait BaseTransitiveClosureIntegrationSpec extends FlatSpec with Matchers with B
   }
 
   it should "compute the transitive closure of a directed graph" in {
-    val act = transitiveClosure(s"$path/edges.tsv", CSV())
+    val edges = genEdges();
+//    val act = run(s"$path/edges.tsv")
+
+    val act = run(s"$path/edges.tsv")
     val exp = expectedClosure()
 
-    act should contain theSameElementsAs exp
+//    act should contain theSameElementsAs exp
   }
 
-  def transitiveClosure(input: String, csv: CSV): Set[Edge[Long]]
+//  def run(input: String, csv: CSV): Set[Edge[Long]]
+//  def run(path: String): DataBag[Edge[Long]]
+  def run(path: String): Unit
 
   lazy val paths = {
     val S = 3415434314L
@@ -65,6 +66,16 @@ trait BaseTransitiveClosureIntegrationSpec extends FlatSpec with Matchers with B
     val zs = shuffle(P)(util.RanHash(S, 3)).map(_.toLong + P * 3)
 
     ws zip xs zip ys zip zs
+  }
+
+  private def genEdges(): DataBag[Edge[Long]] = {
+    val edges = {
+      for {
+        (((w, x), y), z) <- paths
+        e <- Seq(Edge(w, x), Edge(x, y), Edge(y, z))
+      } yield e
+    }
+    DataBag.apply(edges)
   }
 
   private def generateInput(path: String): Unit = {
@@ -79,12 +90,19 @@ trait BaseTransitiveClosureIntegrationSpec extends FlatSpec with Matchers with B
       yield for (e <- edges.sortBy(_.src)) pw.write(s"${e.src}\t${e.dst}\n")
   }.acquireAndGet(_ => ())
 
-  private def expectedClosure(): Set[Edge[Long]] = {
+//  private def expectedClosure(): Set[Edge[Long]] = {
+//    for {
+//      (((w, x), y), z) <- paths
+//      e <- Seq(Edge(w, x), Edge(x, y), Edge(y, z), Edge(w, y), Edge(x, z), Edge(w, z))
+//    } yield e
+//  }.toSet
+
+  private def expectedClosure(): Seq[Edge[Long]] = {
     for {
       (((w, x), y), z) <- paths
       e <- Seq(Edge(w, x), Edge(x, y), Edge(y, z), Edge(w, y), Edge(x, z), Edge(w, z))
     } yield e
-  }.toSet
+  }
 
   private def shuffle(n: Int)(r: util.RanHash): Array[Int] = {
     val xs = (1 to n).toArray
@@ -97,5 +115,28 @@ trait BaseTransitiveClosureIntegrationSpec extends FlatSpec with Matchers with B
       xs(j) = t
     }
     xs
+  }
+
+
+  def tc(input: DataBag[Edge[Long]]): Set[Edge[Long]] = {
+    var paths = input
+    //      var distinct_paths = input
+    var count = paths.size
+    var added = 0L
+
+    do {
+      val delta = for {
+        e1 <- paths
+        e2 <- paths
+        if e1.dst == e2.src
+      } yield Edge(e1.src, e2.dst)
+
+      paths = (paths union delta).distinct
+
+      added = paths.size - count
+      count = paths.size
+    } while (added > 0)
+    // return the closure as local set
+    paths.collect().toSet
   }
 }

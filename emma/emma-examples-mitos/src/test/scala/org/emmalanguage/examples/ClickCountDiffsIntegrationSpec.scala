@@ -22,6 +22,7 @@ class ClickCountDiffsIntegrationSpec extends BaseClickCountDiffsIntegrationSpec 
 
   override def clickCountDiffs(baseInName: String, numDays: Int): Unit =
     withDefaultFlinkStreamEnv(implicit flink => emma.onmitos {
-      ClickCountDiffs(baseInName, numDays)
+      val baseName = baseInName
+      ClickCountDiffs(baseName, numDays)
     })
 }

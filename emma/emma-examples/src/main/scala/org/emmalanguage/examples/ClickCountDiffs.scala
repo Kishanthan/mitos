@@ -50,6 +50,7 @@ object ClickCountDiffs {
       day += 1
     }
 
+    yesterdayCounts
   }
 
   val csvConfig = CSV()
