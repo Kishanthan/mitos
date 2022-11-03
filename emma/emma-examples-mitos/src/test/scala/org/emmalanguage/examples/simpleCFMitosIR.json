@@ -1,0 +1,184 @@
+{
+  "nodes": [
+    {
+      "id": -1,
+      "type": "IterationSource-7",
+      "pact": "Data Source",
+      "contents": "IterationSource-7",
+      "parallelism": 8
+    },
+    {
+      "id": 1,
+      "type": "Source: Custom Source",
+      "pact": "Data Source",
+      "contents": "Source: Custom Source",
+      "parallelism": 1
+    },
+    {
+      "id": 3,
+      "type": "Source: Collection Source",
+      "pact": "Data Source",
+      "contents": "Source: Collection Source",
+      "parallelism": 1
+    },
+    {
+      "id": 4,
+      "type": "bagify",
+      "pact": "Operator",
+      "contents": "bagify",
+      "parallelism": 8,
+      "predecessors": [
+        {
+          "id": 3,
+          "ship_strategy": "REBALANCE",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "Map",
+      "pact": "Operator",
+      "contents": "Map",
+      "parallelism": 8,
+      "predecessors": [
+        {
+          "id": 4,
+          "ship_strategy": "FlinkPartitioner",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "phi",
+      "pact": "Operator",
+      "contents": "phi",
+      "parallelism": 8,
+      "predecessors": [
+        {
+          "id": 6,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        },
+        {
+          "id": -1,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "inc-map",
+      "pact": "Operator",
+      "contents": "inc-map",
+      "parallelism": 8,
+      "predecessors": [
+        {
+          "id": 8,
+          "ship_strategy": "FlinkPartitioner",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "type": "Map",
+      "pact": "Operator",
+      "contents": "Map",
+      "parallelism": 8,
+      "predecessors": [
+        {
+          "id": 10,
+          "ship_strategy": "FlinkPartitioner",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "type": "smaller-than",
+      "pact": "Operator",
+      "contents": "smaller-than",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 10,
+          "ship_strategy": "FlinkPartitioner",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "type": "exit-cond",
+      "pact": "Operator",
+      "contents": "exit-cond",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 16,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "type": "print-phase 100",
+      "pact": "Operator",
+      "contents": "print-phase 100",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 10,
+          "ship_strategy": "FlinkPartitioner",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": -2,
+      "type": "IterationSink-7",
+      "pact": "Data Sink",
+      "contents": "IterationSink-7",
+      "parallelism": 8,
+      "predecessors": [
+        {
+          "id": 14,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "Sink: Unnamed",
+      "pact": "Data Sink",
+      "contents": "Sink: Unnamed",
+      "parallelism": 8,
+      "predecessors": [
+        {
+          "id": 1,
+          "ship_strategy": "REBALANCE",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "type": "Sink: Unnamed",
+      "pact": "Data Sink",
+      "contents": "Sink: Unnamed",
+      "parallelism": 8,
+      "predecessors": [
+        {
+          "id": 10,
+          "ship_strategy": "FlinkPartitioner",
+          "side": "second"
+        }
+      ]
+    }
+  ]
+}
