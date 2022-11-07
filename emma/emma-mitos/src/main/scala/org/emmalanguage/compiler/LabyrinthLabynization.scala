@@ -406,6 +406,43 @@ trait mitosLabynization extends mitosCompilerBase {
               replacements += (lhs -> finalNode._3)
               skip(dc)
 
+            // distinct
+            case dc @ core.DefCall
+              (Some(core.Ref(lhsSym)), DataBag.distinct, _, _) =>
+
+              val tpe = lhsSym.info.typeArgs.head
+              val lhsReplSym = replacements(lhsSym)
+
+              // =========== Labynode union ===========
+              // bagoperator
+
+              val bagOpDistinctVDrhs = core.DefCall(
+                Some(ScalaOps$.ref),
+                ScalaOps$.distinct,
+                Seq(tpe),
+                Seq()
+              )
+              val bagOpDistinctRefDef = valRefAndDef(owner, "distinctOp", bagOpDistinctVDrhs)
+
+              val refDefs = generateLabyNode[Always0[Any]](
+                owner,
+                bagOpDistinctRefDef._1,
+                tpe,
+                tpe,
+                1,
+                Seq(lhsReplSym),
+                "distinct",
+                1,
+                bbIdMap
+              )
+              val defs = refDefs._1.map(_._2)
+              val finalNode = refDefs._2
+
+              // put everything into a block
+              valDefsFinal = valDefsFinal ++ Seq(bagOpDistinctRefDef._2) ++ defs :+ finalNode._2
+              replacements += (lhs -> finalNode._3)
+              skip(dc)
+
             case dc @ core.DefCall
               (_, Ops.cross, Seq(tpeA, tpeB), Seq(Seq(core.Ref(lhsSym), core.Ref(rhsSym)))) =>
 

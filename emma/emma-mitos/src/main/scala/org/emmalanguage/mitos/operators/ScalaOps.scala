@@ -254,6 +254,10 @@ object ScalaOps {
     new Union[T]
   }
 
+  def distinct[T](): Distinct[T] = {
+    new Distinct[T]
+  }
+
   def textSource: BagOperator[String, InputFormatWithInputSplit[String, FileInputSplit]] = {
     new CFAwareTextSource
   }

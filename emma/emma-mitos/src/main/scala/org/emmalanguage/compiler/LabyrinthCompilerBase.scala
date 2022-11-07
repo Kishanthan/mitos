@@ -223,6 +223,7 @@ trait mitosCompilerBase extends Compiler {
     val joinScala = op("joinScala")
     val map = op("map")
     val reduce = op("reduce")
+    val distinct = op("distinct")
     val textReader = op("textReader")
     val textSource = op("textSource")
     val toCsvString = op("toCsvString")
