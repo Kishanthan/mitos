@@ -28,7 +28,8 @@ class TransitiveClosureOnMitosSpec extends BaseTransitiveClosureIntegrationSpec 
         val splits = s.split("\t")
         Edge(Integer.parseInt(splits(0)).toLong, Integer.parseInt(splits(1)).toLong)
       })
-      var count = paths.map(e => e).size
+//      var count = paths.map(e => e).size
+      var count = 0L
       var added = 0L
 
       do {
@@ -38,20 +39,16 @@ class TransitiveClosureOnMitosSpec extends BaseTransitiveClosureIntegrationSpec 
           if e1.dst == e2.src
         } yield Edge(e1.src, e2.dst)
 
+        paths = paths union delta
 
-
-//        paths = for {
-//          e1 <- paths.zipWithIndex()
-//          e2 <- paths.zipWithIndex()
-//          if e1._2 != e2._2 && e1._1.src != e2._1.src && e1._1.dst != e2._1.dst
-//        } yield e1._1
-
+        paths = paths.distinct
         val size = paths.map(e => e).size
 
         added = size - count
         count = size
       } while (added > 0)
 
+      print(count)
     })
   }
 

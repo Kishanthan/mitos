@@ -413,7 +413,7 @@ trait mitosLabynization extends mitosCompilerBase {
               val tpe = lhsSym.info.typeArgs.head
               val lhsReplSym = replacements(lhsSym)
 
-              // =========== Labynode union ===========
+              // =========== Labynode distinct ===========
               // bagoperator
 
               val bagOpDistinctVDrhs = core.DefCall(

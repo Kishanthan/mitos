@@ -15,56 +15,35 @@
  */
 package org.emmalanguage.examples
 
+import org.emmalanguage.FlinkAware
 import org.emmalanguage.api.{DataBag, emma}
 import org.emmalanguage.examples.graphs.model.Edge
-import org.emmalanguage.mitosAware
 
 
-class SimpleCFOnMitosSpec extends BaseIntegrationSpec with mitosAware {
+class DistinctOnEmmaSpec extends BaseIntegrationSpec with FlinkAware {
 
   override def run(): Unit = {
-    withDefaultFlinkStreamEnv(implicit flink => emma.onmitos {
+    withDefaultFlinkEnv(implicit flink => emma.onFlink {
 
-      //      // BB 0
-      //      var i = 0
-      //      do {
-      //        // BB 1
-      //        i = i + 1
-      //      } while (i < 100)
-      //      // BB 2
-      //      print(i)
-
-      // BB 0
       var paths = DataBag.readText("/Users/kishanthan/Work/internship/projects/mitos/" +
         "emma/emma-examples-mitos/src/test/scala/org/emmalanguage/examples/edges.tsv" + 1)
         .map(s => {
           val splits = s.split("\t")
           Edge(Integer.parseInt(splits(0)).toLong, Integer.parseInt(splits(1)).toLong)
         })
-      var added = 0L
-//      var count = paths.map(e => e).size
-      var count = 15
 
-      do {
-        // BB 1
-        val delta = for {
-          e1 <- paths
-          e2 <- paths
-          if e1.dst == e2.src
-        } yield Edge(e1.src, e2.dst)
+      val delta = for {
+        e1 <- paths
+        e2 <- paths
+        if e1.dst == e2.src
+      } yield Edge(e1.src, e2.dst)
 
-        paths = (paths union delta)
+      paths = paths union delta
 
-        val size = paths.map(e => e).size
+//      paths = paths.distinct
 
-//        print("Size ### " + size)
-        print("Count ### " + count)
-
-        added = size
-
-      } while (added < 0)
-      // BB 2
-      print(added)
+      val size = paths.fold(0L)(_ => 1L, _ + _)
+      print("### Size" + size)
     })
   }
 }

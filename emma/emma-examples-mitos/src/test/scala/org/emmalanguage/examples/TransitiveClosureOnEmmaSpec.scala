@@ -28,7 +28,8 @@ class TransitiveClosureOnEmmaSpec extends BaseTransitiveClosureIntegrationSpec w
         val splits = s.split("\t")
         Edge(Integer.parseInt(splits(0)).toLong, Integer.parseInt(splits(1)).toLong)
       })
-      var count = paths.size
+//      var count = paths.map(e => e).size
+      var count = 15L
       var added = 0L
 
       do {
@@ -38,14 +39,17 @@ class TransitiveClosureOnEmmaSpec extends BaseTransitiveClosureIntegrationSpec w
           if e1.dst == e2.src
         } yield Edge(e1.src, e2.dst)
 
-        paths = (paths union delta).distinct
+        paths = paths union delta
 
-        val size = paths.size
+        paths = paths.distinct
+
+        val size = paths.map(e => e).size
+
         added = size - count
         count = size
       } while (added > 0)
 
-//      paths
+      print(count)
     })
 
   //
