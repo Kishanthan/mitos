@@ -122,6 +122,72 @@ abstract class BaseCodegenIntegrationSpec extends FreeSpec
   // Map
   // --------------------------------------------------------------------------
 
+  "UnSupportedOperators" - {
+    "groupby" in verify(u.reify {
+      DataBag(Seq(1)) groupBy { _ % 2 }
+    })
+
+    "zipwithindex" in verify(u.reify {
+      var paths:DataBag[Edge[Long]] = DataBag.empty
+      var connected = for {
+        x <- paths.zipWithIndex()
+        y <- paths.zipWithIndex()
+        if x._1.dst == y._1.dst
+      } yield (x, y)
+
+      print(connected.size)
+    })
+
+    "collect" in verify(u.reify {
+      var seq = DataBag(1 to 50).collect()
+      print(seq.size)
+    })
+
+    "closure" in verify(u.reify {
+      val out = DataBag(7 to 9)
+      for {
+        in <- DataBag(1 to 3)
+      } yield {
+        if (out.exists(_ == in)) in * in
+        else 0
+      }
+    })
+  }
+
+  "BuggyOperators" - {
+    "csvread" in verify(u.reify {
+      val inputPath = materializeResource("/cinema/imdb.csv")
+      val imdb = DataBag.readCSV[ImdbMovie]("file://" + inputPath, CSV())
+      imdb.withFilter(movie => movie.year == 1989)
+    })
+
+    "nested inner referring outer" in verify(u.reify {
+      for {
+        line <- DataBag(jabberwocky)
+        word <- DataBag(line split "\\W+")
+      } yield (line, word)
+    })
+
+    "readtext" in verify(u.reify{
+      var paths = DataBag.readText("path").map(s => {
+        val splits = s.split("\t")
+        Edge(Integer.parseInt(splits(0)).toLong, Integer.parseInt(splits(1)).toLong)
+      })
+      var count = paths.size
+      print(count)
+    })
+
+    "size" in verify(u.reify{
+      val movies = DataBag(cannes) union DataBag(berlin)
+      print(movies.size)
+    })
+
+    "print" in verify(u.reify{
+      val movies = DataBag(cannes) union DataBag(berlin)
+      print(movies)
+    })
+  }
+
   "Map" - {
     // Ignored because the mitos compilation doesn't yet handle closures
     "primitives" in ignoreFormitos(verify(u.reify {
