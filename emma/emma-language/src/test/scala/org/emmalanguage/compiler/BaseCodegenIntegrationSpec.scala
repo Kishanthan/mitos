@@ -186,9 +186,20 @@ abstract class BaseCodegenIntegrationSpec extends FreeSpec
       val movies = DataBag(cannes) union DataBag(berlin)
       print(movies)
     })
+
+    "print with size" in verify(u.reify {
+      var paths = DataBag(Seq(Edge(1,2), Edge(2, 3), Edge(3,4)))
+      print(paths.size)
+    })
   }
 
   "Map" - {
+
+    "simple" in verify(u.reify{
+      var movies_count =  DataBag(cannes).map(movie => movie.country).size
+      print(movies_count)
+    })
+
     // Ignored because the mitos compilation doesn't yet handle closures
     "primitives" in ignoreFormitos(verify(u.reify {
       val us = DataBag(1 to 3)

@@ -23,6 +23,17 @@ class SimpleCFIROnMitosSpec extends BaseIntegrationSpec {
 
   override def run(): Unit = {
 
+//          // BB 0
+//          i1 = 0
+//          do {
+//            // BB 1
+//            i2 = Φ(i1, i3)
+//            i3 = i2 + 1
+//            exitCond = i3 < 100
+//          } while (exitCond)
+//          // BB 2
+//          print(i3)
+
     {
       org.emmalanguage.compiler.Memo.memoizeTypeInfo[_root_.scala.Boolean](implicitly[scala.reflect.runtime.universe.TypeTag[_root_.scala.Boolean]], org.apache.flink.api.scala.`package`.createTypeInformation[_root_.scala.Boolean]);
       org.emmalanguage.compiler.Memo.memoizeTypeInfo[_root_.scala.Int](implicitly[scala.reflect.runtime.universe.TypeTag[_root_.scala.Int]], org.apache.flink.api.scala.`package`.createTypeInformation[_root_.scala.Int]);
@@ -58,7 +69,6 @@ class SimpleCFIROnMitosSpec extends BaseIntegrationSpec {
     val labyNode$m1 = new _root_.org.emmalanguage.mitos.LabyNode[_root_.org.emmalanguage.mitos.util.Nothing, _root_.scala.Int](
       "fromNothing", fromNothing$m1, 0, partitioner$m1, null, elementOrEventTypeInfo$m1)
       .setParallelism(1)
-//    val setPrllzm$m1 = labyNode$m1.setParallelism(1);
 
     val partitioner$m2 = new _root_.org.emmalanguage.mitos.partitioners.Always0[_root_.scala.Int](1);
     val typeInfo$m2 = _root_.org.emmalanguage.compiler.Memo.typeInfoForType[_root_.scala.Int];
@@ -79,15 +89,11 @@ class SimpleCFIROnMitosSpec extends BaseIntegrationSpec {
       "map", mapOp$m1, 1, partitioner$m3, null, elementOrEventTypeInfo$m3)
       .addInput(phiNode$m1, true, false)
       .setParallelism(1)
-//    val addInput$m1 = labyNode$m2.addInput(phiNode$m1, true, false);
-//    val setPrllzm$m2 = addInput$m1.setParallelism(1);
 
     phiNode$m1.addInput(labyNode$m2, false, true)
-//    val addInput$m5 = phiNode$m1.addInput(setPrllzm$m2, false, true);
-//    val addInput$m6 = phiNode$m1.addInput(setPrllzm$m1, false, true);
 
     val lambda$m2 = ((t$m2: _root_.scala.Int) => {
-      val lbdaRhs$m2 = t$m2.<(100);
+      val lbdaRhs$m2 = t$m2.<(4);
       lbdaRhs$m2
     });
     val mapOp$m2 = _root_.org.emmalanguage.mitos.operators.ScalaOps.map[_root_.scala.Int, _root_.scala.Boolean](lambda$m2);
@@ -98,8 +104,6 @@ class SimpleCFIROnMitosSpec extends BaseIntegrationSpec {
       "map", mapOp$m2, 1, partitioner$m4, null, elementOrEventTypeInfo$m4)
       .addInput(labyNode$m2, true, false)
       .setParallelism(1)
-//    val addInput$m2 = labyNode$m3.addInput(setPrllzm$m2, true, false);
-//    val setPrllzm$m3 = addInput$m2.setParallelism(1);
 
     val seq$m1 = _root_.scala.collection.Seq.apply[_root_.scala.Int](1);
     val seq$m2 = _root_.scala.collection.Seq.apply[_root_.scala.Int](2);
@@ -111,8 +115,6 @@ class SimpleCFIROnMitosSpec extends BaseIntegrationSpec {
       "condNode", condOp$m1, 1, partitioner$m6, null, elementOrEventTypeInfo$m6)
       .addInput(labyNode$m3, true, false)
       .setParallelism(1)
-//    val addInput$m4 = labyNode$m5.addInput(setPrllzm$m3, true, false);
-//    val setPrllzm$m5 = addInput$m4.setParallelism(1);
 
     val lambda$m3 = ((t$m3: _root_.scala.Int) => {
       val lbdaRhs$m3 = _root_.scala.Predef.print(t$m3);
@@ -126,8 +128,6 @@ class SimpleCFIROnMitosSpec extends BaseIntegrationSpec {
       "map", mapOp$m3, 2, partitioner$m5, null, elementOrEventTypeInfo$m5)
       .addInput(labyNode$m2, false, true)
       .setParallelism(1)
-//    val addInput$m3 = labyNode$m4.addInput(setPrllzm$m2, false, true);
-//    val setPrllzm$m4 = addInput$m3.setParallelism(1);
 
 
     val implEnv$m1 = _root_.scala.Predef.implicitly[_root_.org.apache.flink.streaming.api.scala.StreamExecutionEnvironment];

@@ -1,13 +1,6 @@
 {
   "nodes": [
     {
-      "id": -1,
-      "type": "IterationSource-7",
-      "pact": "Data Source",
-      "contents": "IterationSource-7",
-      "parallelism": 8
-    },
-    {
       "id": 1,
       "type": "Source: Custom Source",
       "pact": "Data Source",
@@ -37,10 +30,10 @@
     },
     {
       "id": 6,
-      "type": "Map",
+      "type": "inputSplits",
       "pact": "Operator",
-      "contents": "Map",
-      "parallelism": 8,
+      "contents": "inputSplits",
+      "parallelism": 1,
       "predecessors": [
         {
           "id": 4,
@@ -51,19 +44,14 @@
     },
     {
       "id": 8,
-      "type": "arg$m1Phi",
+      "type": "readSplits",
       "pact": "Operator",
-      "contents": "arg$m1Phi",
-      "parallelism": 8,
+      "contents": "readSplits",
+      "parallelism": 1,
       "predecessors": [
         {
           "id": 6,
-          "ship_strategy": "FORWARD",
-          "side": "second"
-        },
-        {
-          "id": -1,
-          "ship_strategy": "FORWARD",
+          "ship_strategy": "FlinkPartitioner",
           "side": "second"
         }
       ]
@@ -83,71 +71,15 @@
       ]
     },
     {
-      "id": 14,
-      "type": "Map",
+      "id": 12,
+      "type": "Collect",
       "pact": "Operator",
-      "contents": "Map",
-      "parallelism": 8,
-      "predecessors": [
-        {
-          "id": 10,
-          "ship_strategy": "FlinkPartitioner",
-          "side": "second"
-        }
-      ]
-    },
-    {
-      "id": 16,
-      "type": "map",
-      "pact": "Operator",
-      "contents": "map",
+      "contents": "Collect",
       "parallelism": 1,
       "predecessors": [
         {
           "id": 10,
           "ship_strategy": "FlinkPartitioner",
-          "side": "second"
-        }
-      ]
-    },
-    {
-      "id": 18,
-      "type": "condNode",
-      "pact": "Operator",
-      "contents": "condNode",
-      "parallelism": 1,
-      "predecessors": [
-        {
-          "id": 16,
-          "ship_strategy": "FlinkPartitioner",
-          "side": "second"
-        }
-      ]
-    },
-    {
-      "id": 21,
-      "type": "map",
-      "pact": "Operator",
-      "contents": "map",
-      "parallelism": 1,
-      "predecessors": [
-        {
-          "id": 10,
-          "ship_strategy": "FlinkPartitioner",
-          "side": "second"
-        }
-      ]
-    },
-    {
-      "id": -2,
-      "type": "IterationSink-7",
-      "pact": "Data Sink",
-      "contents": "IterationSink-7",
-      "parallelism": 8,
-      "predecessors": [
-        {
-          "id": 14,
-          "ship_strategy": "FORWARD",
           "side": "second"
         }
       ]
